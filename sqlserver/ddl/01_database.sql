@@ -1,0 +1,10 @@
+/* CREACIÓN DE LA BASE DE DATOS */
+
+IF DB_ID(N'MatriculaCloud360') IS NULL
+BEGIN
+	CREATE DATABASE MatriculaCloud360;
+END
+GO
+
+USE MatriculaCloud360;
+GO
