@@ -15,17 +15,24 @@ services:
     command: >
       bash -c '
       /opt/mssql/bin/sqlservr &
-      echo "Esperando a que SQL Server esté disponible...";
-      until /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P "$$SA_PASSWORD" -C -Q "SELECT 1" >/dev/null 2>&1; do
-        echo "SQL Server aún no está listo. Reintentando en 5 segundos...";
-        sleep 5;
-      done;
-      echo "SQL Server está listo. Ejecutando inicialización completa...";
-      /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P "$$SA_PASSWORD" -C -i /usr/src/app/init/init.sql;
-      /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P "$$SA_PASSWORD" -C -d MatriculaCloud360 -i /usr/src/app/sqlserver/ddl/02_schemas.sql;
-      /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P "$$SA_PASSWORD" -C -d MatriculaCloud360 -i /usr/src/app/sqlserver/ddl/03_tables.sql;
-      /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P "$$SA_PASSWORD" -C -d MatriculaCloud360 -i /usr/src/app/sqlserver/dml/01_seed_data.sql;
-      echo "Inicialización completada.";
+      bash /usr/src/app/init/wait-for-sql.sh &&
+      echo "SQL Server está listo. Ejecutando inicialización completa..." &&
+      /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P "$$SA_PASSWORD" -C -i /usr/src/app/init/init.sql &&
+      /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P "$$SA_PASSWORD" -C -d MatriculaCloud360 -i /usr/src/app/sqlserver/ddl/02_schemas.sql &&
+      /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P "$$SA_PASSWORD" -C -d MatriculaCloud360 -i /usr/src/app/sqlserver/ddl/03_tables.sql &&
+      /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P "$$SA_PASSWORD" -C -d MatriculaCloud360 -i /usr/src/app/sqlserver/ddl/04_constraints.sql &&
+      /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P "$$SA_PASSWORD" -C -d MatriculaCloud360 -i /usr/src/app/sqlserver/dml/01_seed_data.sql &&
+      /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P "$$SA_PASSWORD" -C -d MatriculaCloud360 -i /usr/src/app/sqlserver/dml/02_test_data.sql &&
+      /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P "$$SA_PASSWORD" -C -d MatriculaCloud360 -i /usr/src/app/sqlserver/programmability/functions/fn_CalcularComision.sql &&
+      /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P "$$SA_PASSWORD" -C -d MatriculaCloud360 -i /usr/src/app/sqlserver/programmability/procedures/usp_RegistrarEstudiante.sql &&
+      /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P "$$SA_PASSWORD" -C -d MatriculaCloud360 -i /usr/src/app/sqlserver/programmability/procedures/usp_ActualizarEstudiante.sql &&
+      /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P "$$SA_PASSWORD" -C -d MatriculaCloud360 -i /usr/src/app/sqlserver/programmability/procedures/usp_EliminarEstudiante.sql &&
+      /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P "$$SA_PASSWORD" -C -d MatriculaCloud360 -i /usr/src/app/sqlserver/programmability/procedures/usp_ListarEstudiantes.sql &&
+      /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P "$$SA_PASSWORD" -C -d MatriculaCloud360 -i /usr/src/app/sqlserver/programmability/procedures/usp_ObtenerMatricula.sql &&
+      /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P "$$SA_PASSWORD" -C -d MatriculaCloud360 -i /usr/src/app/sqlserver/programmability/procedures/usp_RegistrarMatricula.sql &&
+      /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P "$$SA_PASSWORD" -C -d MatriculaCloud360 -i /usr/src/app/sqlserver/programmability/views/vw_Matriculas.sql &&
+      /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P "$$SA_PASSWORD" -C -d MatriculaCloud360 -i /usr/src/app/sqlserver/programmability/views/vw_EstudiantesMatriculados.sql &&
+      echo "Inicialización completada." &&
       wait
       '
 

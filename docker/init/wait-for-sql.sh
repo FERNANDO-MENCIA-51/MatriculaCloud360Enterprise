@@ -1,9 +1,11 @@
 #!/bin/bash
 # wait-for-sql.sh
+# Espera a que SQL Server esté disponible para aceptar conexiones.
+# Usa las variables de entorno del contenedor (SA_PASSWORD definida en docker-compose.yml).
 
 HOST="${DB_SERVER:-localhost}"
 USER="${DB_USER:-sa}"
-PASSWORD="${DB_PASSWORD}"
+PASSWORD="${SA_PASSWORD:-${DB_PASSWORD:-}}"
 
 echo "Esperando a que SQL Server en $HOST esté disponible..."
 
@@ -14,10 +16,3 @@ do
 done
 
 echo "¡SQL Server está listo y en línea!"
-
-#Ejecución automática del script de inicialización si está montado
-if [ -f /docker-entrypoint-initdb.d/init.sql ]; then
-    echo "Ejecutando script de inicialización (init.sql)..."
-    /opt/mssql-tools18/bin/sqlcmd -S "$HOST" -U "$USER" -P "$PASSWORD" -C -i /docker-entrypoint-initdb.d/init.sql
-    echo "¡Inicialización de la base de datos completada!"
-fi
