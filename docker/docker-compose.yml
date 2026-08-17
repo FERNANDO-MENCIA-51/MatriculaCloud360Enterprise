@@ -17,6 +17,7 @@ services:
       /opt/mssql/bin/sqlservr &
       bash /usr/src/app/init/wait-for-sql.sh &&
       echo "SQL Server está listo. Ejecutando inicialización completa..." &&
+      mkdir -p /var/opt/mssql/backup && chown mssql:mssql /var/opt/mssql/backup &&
       /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P "$$SA_PASSWORD" -C -i /usr/src/app/init/init.sql &&
       /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P "$$SA_PASSWORD" -C -d MatriculaCloud360 -i /usr/src/app/sqlserver/ddl/02_schemas.sql &&
       /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P "$$SA_PASSWORD" -C -d MatriculaCloud360 -i /usr/src/app/sqlserver/ddl/03_tables.sql &&
@@ -32,6 +33,26 @@ services:
       /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P "$$SA_PASSWORD" -C -d MatriculaCloud360 -i /usr/src/app/sqlserver/programmability/procedures/usp_RegistrarMatricula.sql &&
       /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P "$$SA_PASSWORD" -C -d MatriculaCloud360 -i /usr/src/app/sqlserver/programmability/views/vw_Matriculas.sql &&
       /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P "$$SA_PASSWORD" -C -d MatriculaCloud360 -i /usr/src/app/sqlserver/programmability/views/vw_EstudiantesMatriculados.sql &&
+      echo "Sprint 3: Auditoría..." &&
+      /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P "$$SA_PASSWORD" -C -d MatriculaCloud360 -i /usr/src/app/sqlserver/audit/01_audit_tables.sql &&
+      /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P "$$SA_PASSWORD" -C -d MatriculaCloud360 -i /usr/src/app/sqlserver/audit/02_audit_triggers.sql &&
+      /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P "$$SA_PASSWORD" -C -d MatriculaCloud360 -i /usr/src/app/sqlserver/audit/03_soft_delete.sql &&
+      echo "Sprint 3: Optimización..." &&
+      /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P "$$SA_PASSWORD" -C -d MatriculaCloud360 -i /usr/src/app/sqlserver/optimization/01_indexes.sql &&
+      /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P "$$SA_PASSWORD" -C -d MatriculaCloud360 -i /usr/src/app/sqlserver/optimization/02_advanced_queries.sql &&
+      /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P "$$SA_PASSWORD" -C -d MatriculaCloud360 -i /usr/src/app/sqlserver/optimization/03_performance_tests.sql &&
+      echo "Sprint 3: Seguridad..." &&
+      /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P "$$SA_PASSWORD" -C -d MatriculaCloud360 -i /usr/src/app/sqlserver/security/01_login_users.sql &&
+      /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P "$$SA_PASSWORD" -C -d MatriculaCloud360 -i /usr/src/app/sqlserver/security/02_roles.sql &&
+      /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P "$$SA_PASSWORD" -C -d MatriculaCloud360 -i /usr/src/app/sqlserver/security/03_permissions.sql &&
+      echo "Sprint 3: Mantenimiento..." &&
+      /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P "$$SA_PASSWORD" -C -d MatriculaCloud360 -i /usr/src/app/sqlserver/maintenance/01_backup.sql &&
+      /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P "$$SA_PASSWORD" -C -d MatriculaCloud360 -i /usr/src/app/sqlserver/maintenance/02_restore.sql &&
+      /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P "$$SA_PASSWORD" -C -d MatriculaCloud360 -i /usr/src/app/sqlserver/maintenance/03_maintenance.sql &&
+      echo "Sprint 3: Testing integral..." &&
+      /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P "$$SA_PASSWORD" -C -d MatriculaCloud360 -i /usr/src/app/sqlserver/testing/functional_tests.sql &&
+      /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P "$$SA_PASSWORD" -C -d MatriculaCloud360 -i /usr/src/app/sqlserver/testing/security_tests.sql &&
+      /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P "$$SA_PASSWORD" -C -d MatriculaCloud360 -i /usr/src/app/sqlserver/testing/recovery_tests.sql &&
       echo "Inicialización completada." &&
       wait
       '

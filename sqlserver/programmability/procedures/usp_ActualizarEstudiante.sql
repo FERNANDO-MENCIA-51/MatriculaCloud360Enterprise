@@ -4,6 +4,11 @@
 USE MatriculaCloud360;
 GO
 
+SET ANSI_NULLS ON;
+GO
+SET QUOTED_IDENTIFIER ON;
+GO
+
 CREATE OR ALTER PROCEDURE dbo.usp_ActualizarEstudiante
     @id INT,
     @first_name VARCHAR(100),
@@ -11,6 +16,7 @@ CREATE OR ALTER PROCEDURE dbo.usp_ActualizarEstudiante
     @personal_email VARCHAR(100),
     @phone VARCHAR(20) = NULL,
     @deleted_at DATETIME = NULL
+WITH EXECUTE AS OWNER
 AS
 BEGIN
     SET NOCOUNT ON;
@@ -38,9 +44,7 @@ BEGIN
             phone = @phone,
             deleted_at = @deleted_at
         WHERE id = @id;
-
-        INSERT INTO auditoria.audit_logs (user_id, table_name, operation)
-        VALUES (1, 'operaciones.students', 'UPDATE');
+        -- La auditoria la genera el trigger trg_students_audit_update (Sprint 3)
 
         PRINT 'Estudiante actualizado exitosamente.';
     END TRY

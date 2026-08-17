@@ -4,8 +4,14 @@
 USE MatriculaCloud360;
 GO
 
+SET ANSI_NULLS ON;
+GO
+SET QUOTED_IDENTIFIER ON;
+GO
+
 CREATE OR ALTER PROCEDURE dbo.usp_EliminarEstudiante
     @id INT
+WITH EXECUTE AS OWNER
 AS
 BEGIN
     SET NOCOUNT ON;
@@ -28,9 +34,7 @@ BEGIN
         UPDATE operaciones.students
         SET deleted_at = GETDATE()
         WHERE id = @id;
-
-        INSERT INTO auditoria.audit_logs (user_id, table_name, operation)
-        VALUES (1, 'operaciones.students', 'DELETE');
+        -- La auditoria la genera el trigger trg_students_audit_update (Sprint 3)
 
         PRINT 'Estudiante eliminado exitosamente (soft-delete).';
     END TRY

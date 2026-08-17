@@ -3,6 +3,11 @@
 USE MatriculaCloud360;
 GO
 
+SET ANSI_NULLS ON;
+GO
+SET QUOTED_IDENTIFIER ON;
+GO
+
 CREATE OR ALTER VIEW dbo.vw_EstudiantesMatriculados
 AS
 SELECT

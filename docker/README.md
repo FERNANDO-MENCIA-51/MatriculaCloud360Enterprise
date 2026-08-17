@@ -38,27 +38,31 @@ La base de datos y los objetos de dominio se inicializan automáticamente al lev
 ```text
  1. sqlserver/ddl/01_database.sql
  2. sqlserver/ddl/02_schemas.sql
- 3. sqlserver/ddl/03_tables.sql
- 4. sqlserver/ddl/04_constraints.sql         ← Sprint 2
+ 3. sqlserver/ddl/03_tables.sql          # incluye deleted_at en academic_periods/admission_campaigns
+ 4. sqlserver/ddl/04_constraints.sql     ← Sprint 2
  5. sqlserver/dml/01_seed_data.sql
- 6. sqlserver/dml/02_test_data.sql           ← Sprint 2
- 7. programmability/functions/fn_*.sql       ← Sprint 2
- 8. programmability/procedures/uxp_*.sql     ← Sprint 2
- 9. programmability/views/vw_*.sql           ← Sprint 2
+ 6. sqlserver/dml/02_test_data.sql       ← Sprint 2
+ 7. programmability/functions/fn_*.sql   ← Sprint 2
+ 8. programmability/procedures/usp_*.sql ← Sprint 2 (6 procs, con SET QUOTED_IDENTIFIER ON y EXECUTE AS OWNER)
+ 9. programmability/views/vw_*.sql       ← Sprint 2
+10. audit/01_audit_tables.sql            ← Sprint 3
+11. audit/02_audit_triggers.sql          ← Sprint 3 (18 triggers de auditoria y soft-delete)
+12. audit/03_soft_delete.sql             ← Sprint 3
+13. optimization/01_indexes.sql          ← Sprint 3 (12 indices)
+14. optimization/02_advanced_queries.sql ← Sprint 3 (CTE, ventana, agregados)
+15. optimization/03_performance_tests.sql← Sprint 3 (comparativa ANTES/DESPUES)
+16. security/01_login_users.sql          ← Sprint 3
+17. security/02_roles.sql                ← Sprint 3
+18. security/03_permissions.sql          ← Sprint 3 (GRANT/DENY/REVOKE)
+19. maintenance/01_backup.sql            ← Sprint 3 (FULL/DIFF/LOG)
+20. maintenance/02_restore.sql           ← Sprint 3
+21. maintenance/03_maintenance.sql       ← Sprint 3 (indices + DBCC CHECKDB)
+22. testing/functional_tests.sql         ← Sprint 3 (T1-T17)
+23. testing/security_tests.sql           ← Sprint 3 (S1-S15)
+24. testing/recovery_tests.sql           ← Sprint 3 (R1-R3, al final: restaura la base)
 ```
-    ├── functions/
-    │   └── fn_CalcularComision.sql  → Función para cálculo de comisiones
-    ├── procedures/
-    │   ├── uxp_RegistrarEstudiante.sql
-    │   ├── uxp_ActualizarEstudiante.sql
-    │   ├── uxp_EliminarEstudiante.sql
-    │   ├── uxp_ListarEstudiantes.sql
-    │   ├── uxp_ObtenerMatricula.sql
-    │   └── uxp_RegistrarMatricula.sql
-    └── views/
-        ├── vw_Matriculas.sql
-        └── vw_EstudiantesMatriculados.sql
-```
+
+> Nota: el comando de inicialización se ejecuta en **cada arranque del contenedor** (`docker start`), por lo que los scripts deben permanecer idempotentes. Al finalizar, los resultados de la batería de pruebas quedan en `testing.test_results` (35 pruebas, 35 PASS en la corrida de validación).
 
 ## 3. 🚀 Puesta en marcha
 
@@ -193,6 +197,14 @@ Los scripts se ejecutan en orden numérico y son **idempotentes** (incluyen guar
 
 
 
+## 8. 🔐 Credenciales de los perfiles de aplicación (Sprint 3)
+
+| Perfil | Login | Contraseña | Rol de BD |
+|---|---|---|---|
+| Administrador | `login_admin` | `Admin2026` | `RolAdministrador` |
+| Coordinador académico | `login_coordinador` | `Coord2026` | `RolCoordinadorAcademico` |
+| Promotor | `login_promotor` | `Promo2026` | `RolPromotor` |
+
 ---
 
-*Entorno contenedorizado para MatriculaCloud360Enterprise — Sprint 1.*
+*Entorno contenedorizado para MatriculaCloud360Enterprise — Sprints 1, 2 y 3.*

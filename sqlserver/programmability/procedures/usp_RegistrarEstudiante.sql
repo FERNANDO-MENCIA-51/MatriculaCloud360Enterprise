@@ -4,12 +4,18 @@
 USE MatriculaCloud360;
 GO
 
+SET ANSI_NULLS ON;
+GO
+SET QUOTED_IDENTIFIER ON;
+GO
+
 CREATE OR ALTER PROCEDURE dbo.usp_RegistrarEstudiante
     @dni VARCHAR(15),
     @first_name VARCHAR(100),
     @last_name VARCHAR(100),
     @personal_email VARCHAR(100),
     @phone VARCHAR(20) = NULL
+WITH EXECUTE AS OWNER
 AS
 BEGIN
     SET NOCOUNT ON;
@@ -33,9 +39,7 @@ BEGIN
         VALUES (@dni, @first_name, @last_name, @personal_email, @phone);
 
         DECLARE @NewId INT = SCOPE_IDENTITY();
-
-        INSERT INTO auditoria.audit_logs (user_id, table_name, operation)
-        VALUES (1, 'operaciones.students', 'INSERT');
+        -- La auditoria la genera el trigger trg_students_audit_insert (Sprint 3)
 
         SELECT @NewId AS new_id;
     END TRY

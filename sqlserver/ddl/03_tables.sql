@@ -103,7 +103,8 @@ BEGIN
         name VARCHAR(20) NOT NULL,
         start_date DATE NOT NULL,
         end_date DATE NOT NULL,
-        is_active BIT NOT NULL DEFAULT 1
+        is_active BIT NOT NULL DEFAULT 1,
+        deleted_at DATETIME NULL
     );
 END
 GO
@@ -115,7 +116,8 @@ BEGIN
         id INT IDENTITY(1,1) PRIMARY KEY,
         name VARCHAR(100) NOT NULL,
         commission_percentage DECIMAL(5,2) NOT NULL,
-        is_active BIT NOT NULL DEFAULT 1
+        is_active BIT NOT NULL DEFAULT 1,
+        deleted_at DATETIME NULL
     );
 END
 GO

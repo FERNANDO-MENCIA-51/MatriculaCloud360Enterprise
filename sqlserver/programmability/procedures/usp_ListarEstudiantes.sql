@@ -4,8 +4,14 @@
 USE MatriculaCloud360;
 GO
 
+SET ANSI_NULLS ON;
+GO
+SET QUOTED_IDENTIFIER ON;
+GO
+
 CREATE OR ALTER PROCEDURE dbo.usp_ListarEstudiantes
     @incluir_eliminados BIT = 0
+WITH EXECUTE AS OWNER
 AS
 BEGIN
     SET NOCOUNT ON;

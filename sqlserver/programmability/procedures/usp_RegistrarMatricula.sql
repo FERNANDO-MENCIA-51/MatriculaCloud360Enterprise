@@ -4,6 +4,11 @@
 USE MatriculaCloud360;
 GO
 
+SET ANSI_NULLS ON;
+GO
+SET QUOTED_IDENTIFIER ON;
+GO
+
 CREATE OR ALTER PROCEDURE dbo.usp_RegistrarMatricula
     @enrollment_code VARCHAR(20),
     @student_id INT,
@@ -13,6 +18,7 @@ CREATE OR ALTER PROCEDURE dbo.usp_RegistrarMatricula
     @period_id INT,
     @campaign_id INT,
     @amount DECIMAL(10,2)
+WITH EXECUTE AS OWNER
 AS
 BEGIN
     SET NOCOUNT ON;
@@ -49,17 +55,19 @@ BEGIN
             RETURN;
         END
 
-        -- 5. Validar periodo existente y activo
-        IF NOT EXISTS (SELECT 1 FROM academico.academic_periods WHERE id = @period_id AND is_active = 1)
+        -- 5. Validar periodo existente, activo y no eliminado
+        IF NOT EXISTS (SELECT 1 FROM academico.academic_periods
+                       WHERE id = @period_id AND is_active = 1 AND deleted_at IS NULL)
         BEGIN
-            RAISERROR('El periodo academico no existe o no esta activo.', 16, 1);
+            RAISERROR('El periodo academico no existe, no esta activo o fue eliminado.', 16, 1);
             RETURN;
         END
 
-        -- 6. Validar campana existente y activa
-        IF NOT EXISTS (SELECT 1 FROM academico.admission_campaigns WHERE id = @campaign_id AND is_active = 1)
+        -- 6. Validar campana existente, activa y no eliminada
+        IF NOT EXISTS (SELECT 1 FROM academico.admission_campaigns
+                       WHERE id = @campaign_id AND is_active = 1 AND deleted_at IS NULL)
         BEGIN
-            RAISERROR('La campana de admision no existe o no esta activa.', 16, 1);
+            RAISERROR('La campana de admision no existe, no esta activa o fue eliminada.', 16, 1);
             RETURN;
         END
 
@@ -83,9 +91,7 @@ BEGIN
         );
 
         DECLARE @NewEnrollmentId INT = SCOPE_IDENTITY();
-
-        INSERT INTO auditoria.audit_logs (user_id, table_name, operation)
-        VALUES (1, 'operaciones.enrollments', 'INSERT');
+        -- La auditoria la genera el trigger trg_enrollments_audit_insert (Sprint 3)
 
         COMMIT TRANSACTION;
 
