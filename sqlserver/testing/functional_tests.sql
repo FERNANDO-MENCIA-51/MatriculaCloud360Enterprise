@@ -147,11 +147,18 @@ END CATCH
 GO
 
 /* T6. DELETE fisico convertido a soft-delete por trigger */
-IF NOT EXISTS (SELECT 1 FROM operaciones.students WHERE dni = '99990002')
+SET ANSI_NULLS ON;
+SET QUOTED_IDENTIFIER ON;
+
+IF EXISTS (SELECT 1 FROM operaciones.students WHERE dni = '99990002')
 BEGIN
-    INSERT INTO operaciones.students (dni, first_name, last_name, personal_email, phone)
-    VALUES ('99990002', 'Fisico', 'Delete', 'fisico.delete@gmail.com', '999333444');
+    DISABLE TRIGGER operaciones.trg_students_soft_delete ON operaciones.students;
+    DELETE FROM operaciones.students WHERE dni = '99990002';
+    ENABLE TRIGGER operaciones.trg_students_soft_delete ON operaciones.students;
 END
+
+INSERT INTO operaciones.students (dni, first_name, last_name, personal_email, phone)
+VALUES ('99990002', 'Fisico', 'Delete', 'fisico.delete@gmail.com', '999333444');
 
 DELETE FROM operaciones.students WHERE dni = '99990002';
 

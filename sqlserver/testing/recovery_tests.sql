@@ -13,12 +13,27 @@
    conservan tras la restauracion.
    ============================================================ */
 
+USE MatriculaCloud360;
+GO
+
+SET ANSI_NULLS ON;
+SET QUOTED_IDENTIFIER ON;
+GO
+
+IF EXISTS (SELECT 1 FROM operaciones.students WHERE dni = '88880001' OR personal_email = 'marcador.recovery@gmail.com')
+BEGIN
+    DISABLE TRIGGER operaciones.trg_students_soft_delete ON operaciones.students;
+    DELETE FROM operaciones.students WHERE dni = '88880001' OR personal_email = 'marcador.recovery@gmail.com';
+    ENABLE TRIGGER operaciones.trg_students_soft_delete ON operaciones.students;
+END
+GO
+
 USE master;
 GO
 
 /* 1. Generar el respaldo FULL (deja evidencia en msdb) */
 PRINT '>>> Paso 1: Generando respaldo FULL...';
-EXEC dbo.usp_BackupDatabaseFull;
+EXEC MatriculaCloud360.dbo.usp_BackupDatabaseFull;
 GO
 
 /* 2. Identificar el ultimo respaldo FULL */

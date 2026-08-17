@@ -20,7 +20,10 @@ GO
 SET QUOTED_IDENTIFIER ON;
 GO
 
-/* 1. Restauracion de un respaldo FULL */
+/* 1. Restauracion de un respaldo FULL (en master y MatriculaCloud360) */
+USE master;
+GO
+
 CREATE OR ALTER PROCEDURE dbo.usp_RestoreDatabaseFull
     @backup_file NVARCHAR(500) = NULL
 AS
@@ -46,18 +49,19 @@ BEGIN
         RETURN;
     END
 
-    SET @sql = N'USE master; ALTER DATABASE MatriculaCloud360 SET SINGLE_USER WITH ROLLBACK IMMEDIATE;';
-    EXEC(@sql);
+    ALTER DATABASE MatriculaCloud360 SET SINGLE_USER WITH ROLLBACK IMMEDIATE;
 
     SET @sql = N'RESTORE DATABASE MatriculaCloud360 FROM DISK = ''' + @file
              + N''' WITH REPLACE, RECOVERY;';
     EXEC(@sql);
 
-    SET @sql = N'ALTER DATABASE MatriculaCloud360 SET MULTI_USER;';
-    EXEC(@sql);
+    ALTER DATABASE MatriculaCloud360 SET MULTI_USER;
 
-    SELECT 'Restauracion FULL completada correctamente.' AS resultado;
+    SELECT 'Restauracion FULL completada correctamente.' AS resultado, @file AS archivo_restaurado;
 END
+GO
+
+USE MatriculaCloud360;
 GO
 
 /* 2. Restauracion FULL + DIFERENCIAL */
